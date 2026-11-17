@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 using namespace std;
 class tour
 {
@@ -78,8 +79,9 @@ public:
     void input()
     {
         id = guideid++;
+        cin.ignore();
         cout << "Enter Guide Name: ";
-        cin >> name;
+        getline(cin, name);
         cout << "Enter number of languages guide speak : ";
         cin >> n;
         for (int i = 0; i < n; i++)
@@ -94,7 +96,24 @@ public:
         cout << "\nEnter birthplace : ";
         cin >> birthplace;
     }
+    void saveGuide()
+    {
+        ofstream out("guides.txt", ios::app);
 
+        out << "Guide ID: " << id << endl;
+        out << "Guide Name: " << name << endl;
+        for (int i = 0; i < n; i++)
+        {
+            out << "Language " << i + 1 << ": " << languages[i] << endl;
+        }
+        out << "Age: " << age << " years" << endl;
+        out << "Experience: " << experience << " years" << endl;
+        out << "--------------------------" << endl;
+
+        out.close();
+
+        cout << "\nGuide saved successfully!";
+    }
     inline void display()
     {
         cout << "\n       GUIDE DETAILS        ";
@@ -104,7 +123,7 @@ public:
         for (int i = 0; i < n; i++)
         {
             cout << languages[i];
-            if (i < 3)
+            if (i < n)
                 cout << ", ";
         }
         cout << "\nExperience: " << experience << " years";
@@ -195,67 +214,141 @@ public:
         cout << "Seats Left    : " << left << "\n";
     }
 };
+class loader
+{
+    //make more loader functions with parameter 
+    public:
+    loader()
+    {
+        ifstream in("guides.txt");
+
+        if (!in)
+        {
+            cout << "\nNo saved guide records found!\n";
+            return;
+        }
+
+        cout << "\n========== LOADED GUIDES FROM FILE ==========\n";
+        string line;
+        while (getline(in, line))
+        {
+            cout << line << endl;
+        }
+        cout << "=============================================\n";
+
+        in.close();
+    }
+};
 
 int main()
 {
-    guide guides[2];
-    for (int i = 0; i < 2; i++)
-    {
-        cout << "\nEnter Details of Guide " << i + 1 << endl;
-        guides[i].input();
-    }
-    cout << "\n~~ ALL GUIDES ~~\n";
-
-    for (int i = 0; i < 2; i++)
-    {
-
-        guides[i].display();
-    }
-    tour tours[2];
-
-    for (int i = 0; i < 2; i++)
-    {
-        cout << "\nEnter Details of Tour " << i + 1 << endl;
-
-        tours[i].input(tours, i);
-    }
-
-    cout << "\n~~ ALL TOURS ~~\n";
-
-    for (int i = 0; i < 2; i++)
-    {
-        tours[i].display();
-    }
     tickets tkt[2];
-    int group;
-    cout << "\nEnter number of group : ";
-    cin >> group;
-    for (int i = 0; i < group; i++)
+    cout << "\nLoading system...";
+    loader load;
+    guide guides[5];
+    tour tours[2];
+    int choice;
+    do
     {
-        string destination;
-        cout << "\nEnter Ticket Details for Booking " << i + 1 << endl;
-        cout << "\nEnter Destination (Kashmir/Jammu): ";
-        cin >> destination;
-        tour *ptr = nullptr;
-        if (destination == "Kashmir")
+        cout << "\n==============================\n";
+        cout << "      TOUR MANAGEMENT SYSTEM    \n";
+        cout << "================================\n";
+        cout << "1. Manage Guides\n";
+        cout << "2. Manage Tours\n";
+        cout << "3. Book Tickets\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice (1-4): ";
+        cin >> choice;
+        switch (choice)
         {
-            ptr = &tours[0];
-        }
-        else if (destination == "Jammu")
+        case 1:
         {
-            ptr = &tours[1];
+            cout << "\n--- GUIDE MANAGEMENT ---\n";
+            int g;
+            cout << "Enter number of guides you want to enter : ";
+            cin >> g;
+            if (g >= 5)
+            {
+                cout << "Maximum capacity is 5. Setting count to 5.\n";
+                g = 5;
+            }
+            for (int i = 0; i < g; i++)
+            {
+                cout << "\nEnter Details of Guide " << i + 1 << endl;
+                guides[i].input();
+                guides[i].saveGuide(); // for future in inheritance all classes will call this function
+            }
+            cout << "\n~~ ALL GUIDES ~~\n";
+            for (int i = 0; i < g; i++)
+            {
+                guides[i].display();
+            }
+            break;
         }
-        else
+        case 2:
         {
-            cout << "\nInvalid Destination!";
+            cout << "\n--- TOUR MANAGEMENT ---\n";
+            for (int i = 0; i < 2; i++)
+            {
+                cout << "\nEnter Details of Tour " << i + 1 << endl;
+                tours[i].input(tours, i);
+            }
+            cout << "\n~~ ALL TOURS ~~\n";
+            for (int i = 0; i < 2; i++)
+            {
+                tours[i].display();
+            }
+            break;
         }
-        tkt[i].input(*ptr);
-    }
-    cout << "\n~~ ALL TICKET DETAILS ~~\n";
+        case 3:
+        {
+            int group;
+            cout << "\nEnter number of bookings: ";
+            cin >> group;
 
-    for (int i = 0; i < group; i++)
-    {
-        tkt[i].display();
-    }
+            for (int i = 0; i < group; i++)
+            {
+                string destination;
+                cout << "\nEnter Ticket Details for Booking " << i + 1 << endl;
+                cout << "Enter Destination (Kashmir/Jammu): ";
+                cin >> destination;
+
+                tour *ptr = nullptr;
+                if (destination == "Kashmir")
+                {
+                    ptr = &tours[0];
+                }
+                else if (destination == "Jammu")
+                {
+                    ptr = &tours[1];
+                }
+                else
+                {
+                    cout << "\nInvalid Destination! Skipping...\n";
+                    continue;
+                }
+                tkt[i].input(*ptr);
+            }
+            cout << "\n~~ ALL TICKET DETAILS ~~\n";
+            for (int i = 0; i < group; i++)
+            {
+                if (tkt[i].tkt > 0)
+                {
+                    tkt[i].display();
+                }
+            }
+            break;
+        }
+        case 4:
+        {
+            cout << "\nExiting Program. Goodbye!\n";
+            break;
+        }
+        default:
+        {
+            cout << "\nInvalid choice! Please choose between 1 and 4.\n";
+        }
+        }
+    } while (choice != 4);
     return 0;
 }
