@@ -96,7 +96,7 @@ public:
         cout << "\nEnter birthplace : ";
         cin >> birthplace;
     }
-    void saveGuide()
+    void saveGuide()//make save for file for tickets and tours
     {
         ofstream out("guides.txt", ios::app);
 
@@ -216,7 +216,7 @@ public:
 };
 class loader
 {
-    //make more loader functions with parameter 
+    //make more loader constructor with parameter 
     public:
     loader()
     {
@@ -239,12 +239,35 @@ class loader
         in.close();
     }
 };
+class QuickTour
+{
+public:
+    string destination;
+    int duration;
+    double price;
+    int available_seats;
 
+    // Parameterized Constructor that prints details immediately upon creation
+    QuickTour(string dest, int dur, double p, int seats)
+    {
+        destination = dest;
+        duration = dur;
+        price = p;
+        available_seats = seats;
+
+        cout << "\n--- QUICK DEBUG TOUR CREATED ---";
+        cout << "\nDestination      : " << destination;
+        cout << "\nDuration         : " << duration << " days";
+        cout << "\nPrice            : " << price;
+        cout << "\nAvailable Seats  : " << available_seats << "\n";
+    }
+};
 int main()
 {
     tickets tkt[2];
     cout << "\nLoading system...";
     loader load;
+    QuickTour debugPackage("Kashmir", 5, 12000.0, 20);
     guide guides[5];
     tour tours[2];
     int choice;
