@@ -79,7 +79,6 @@ public:
     void input()
     {
         id = guideid++;
-        cin.ignore();
         cout << "Enter Guide Name: ";
         getline(cin, name);
         cout << "Enter number of languages guide speak : ";
@@ -255,7 +254,7 @@ public:
         price = p;
         available_seats = seats;
 
-        cout << "\n--- QUICK DEBUG TOUR CREATED ---";
+        cout << "\n--- QUICK TOUR CREATED ---";
         cout << "\nDestination      : " << destination;
         cout << "\nDuration         : " << duration << " days";
         cout << "\nPrice            : " << price;
